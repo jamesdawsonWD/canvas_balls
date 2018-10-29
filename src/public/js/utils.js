@@ -22,7 +22,7 @@ function randomColorFromRanges(hueRange, satRange, lightRange, alphaRange) {
                 randomIntFromRange(hueRange[0], hueRange[1]),
                 randomIntFromRange(satRange[0], satRange[1]),
                 randomIntFromRange(lightRange[0], lightRange[1]),
-                randomIntFromRange(alphaRange[0], alphaRange[1])
+                alphaRange
             );
 }
 
