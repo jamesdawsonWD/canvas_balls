@@ -130,12 +130,24 @@ Vector.prototype = {
     }
 };
 
-const background = '#010C0C';
+const background = '#E8EBF7';
 
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
+
 canvas.width = innerWidth
 canvas.height = innerHeight
+
+let hippoPositionX = canvas.width/2-200;
+let hippoPositionY = canvas.height-300;
+let img;
+
+make_base();
+function make_base()
+{
+    img = new Image();
+    img.src = '../img/hippo.png';
+}
 
 
 const mouse = {
@@ -158,6 +170,32 @@ addEventListener('mousemove', event => {
     mouse.y = event.clientY
     mouse.vector = new Vector(mouse.x, mouse.y);
 })
+
+document.addEventListener('keypress', (event) => {
+    switch(event.key) {
+        case 'd':
+            if (hippoPositionX < canvas.width + 100) hippoPositionX += 100;
+            if (hippoPositionX > canvas.width) hippoPositionX = -400;
+            break;
+        case 'a':
+            if (hippoPositionX > -500) hippoPositionX -= 100;
+            if (hippoPositionX < -300) hippoPositionX = canvas.width+100;
+
+            break;
+        case 'w':
+            if (hippoPositionY > canvas.height-500) hippoPositionY -= 200;
+            break;
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    switch(event.key) {
+        case 'w':
+            console.log(event);
+             hippoPositionY += 200;
+            break;
+    }
+});
 
 let origin = new Vector; 
 addEventListener('click', event => {
@@ -200,7 +238,6 @@ function Firework(origin, dest, radius, color) {
     this.particles = [];
 }
 
-
 Firework.prototype.draw = function(milliseconds) {
 
     const data = distanceToAndAngle(this.origin, this.dest);
@@ -237,12 +274,14 @@ function drawParticles() {
         
         ctx.save();
         ctx.beginPath();
+        ctx.drawImage(img, hippoPositionX, hippoPositionY);
         ctx.translate(fireworks[i].origin.x, fireworks[i].origin.y);
         ctx.arc(0, 0, fireworks[i].radius, 0, 2 * Math.PI);
         ctx.fillStyle = fireworks[i].color;
         ctx.fill();
         ctx.stroke();
         ctx.restore();
+
     }
 }
 function clearCanvas() {
@@ -270,9 +309,10 @@ function animate(milliseconds) {
         
         fireworks[i].update(elapsed);
         if(fireworks[i].station ) {
-            if (i !== fireworks[fireworks.length - 1]) {
-                fireworks[i].dest = fireworks[fireworks.length - 1].origin;
-            }
+            // if (i !== fireworks[fireworks.length - 1]) {
+            //     fireworks[i].dest = fireworks[fireworks.length - 1].origin;
+            // }
+            fireworks[i].dest = new Vector(canvas.width/2-100, canvas.height);
             if (fireworks[i].origin == fireworks[fireworks.length - 1].origin && fireworks.length > 20) {
                 fireworks.splice(0, 20);
                 console.log(fireworks);
@@ -285,6 +325,7 @@ function animate(milliseconds) {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fill();
     }
+
     requestAnimationFrame(animate)
 }
 
