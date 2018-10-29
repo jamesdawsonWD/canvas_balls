@@ -201,7 +201,7 @@ let origin = new Vector;
 addEventListener('click', event => {
 
         const dest = mouse.vector;
-        const origin = new Vector(utils.randomIntFromRange(canvas.width/2 - 100,canvas.width/2 + 100), canvas.height );
+        const origin = new Vector(utils.randomIntFromRange(canvas.width/2 - 100,canvas.width/2 + 100), 0 );
         const vector = new Firework(
                             origin,
                             dest,
