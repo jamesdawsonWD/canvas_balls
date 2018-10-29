@@ -307,11 +307,12 @@ function animate(milliseconds) {
         
         fireworks[i].update(elapsed);
         if(fireworks[i].station ) {
-            fireworks[i].dest = new Vector(canvas.width/2-100, canvas.height);
+            fireworks[i].dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height-300));
+
             if (fireworks[i].origin == fireworks[fireworks.length - 1].origin && fireworks.length > 20) {
                 fireworks.splice(0, 20);
-                console.log(fireworks);
             }
+            fireworks[i].station = false;
    }
     }
     if(!fireworks.length) {
