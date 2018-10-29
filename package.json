@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --history-api-fallback --inline --progress",
-    "build": "webpack-dev-server --history-api-fallback --inline --progress"
+    "build": "webpack --config webpack.config.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
