@@ -130,7 +130,7 @@ Vector.prototype = {
     }
 };
 
-const background = '#E8EBF7';
+const background = ' #0C949E';
 
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
@@ -140,13 +140,14 @@ canvas.height = innerHeight
 
 let hippoPositionX = canvas.width/2-200;
 let hippoPositionY = canvas.height-300;
-let img;
+let img, imgmain, imgforward;
 
 make_base();
-function make_base()
-{
+function make_base() {
     img = new Image();
-    img.src = '../img/hippo.png';
+
+    // imgforward = new Image();
+    // imgforward.src = '../img/whale-open.png';
 }
 
 
@@ -162,7 +163,7 @@ const Configs = {
     lastStep: 0
 };
 
-const colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']
+const colors = ['#85FF9E', '#F6F7F8', '#FCFF4B', '#FF7F66', '#00F2F2']
 
 // Event Listeners
 addEventListener('mousemove', event => {
@@ -184,6 +185,7 @@ document.addEventListener('keypress', (event) => {
             break;
         case 'w':
             if (hippoPositionY > canvas.height-500) hippoPositionY -= 200;
+            img.src = '../img/whale-open.png';
             break;
     }
 });
@@ -191,13 +193,12 @@ document.addEventListener('keypress', (event) => {
 document.addEventListener("keyup", (event) => {
     switch(event.key) {
         case 'w':
-            console.log(event);
-             hippoPositionY += 200;
+            img.src = '../img/whale-closed.png';
+            hippoPositionY += 200;
             break;
     }
 });
 
-let origin = new Vector; 
 addEventListener('click', event => {
 
         const dest = mouse.vector;
@@ -205,8 +206,8 @@ addEventListener('click', event => {
         const vector = new Firework(
                             origin,
                             dest,
-                            utils.randomIntFromRange(10,10), 
-                            utils.randomColorFromRanges([0,360], [60,80], [50,60],1),
+                            20, 
+                            utils.randomColorFromArray(colors),
                         )
         fireworks.push(
             vector
@@ -308,11 +309,10 @@ function animate(milliseconds) {
         fireworks[i].update(elapsed);
         if(fireworks[i].station ) {
             fireworks[i].dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height-300));
-
-            if (fireworks[i].origin == fireworks[fireworks.length - 1].origin && fireworks.length > 20) {
-                fireworks.splice(0, 20);
-            }
             fireworks[i].station = false;
+            if (fireworks.length > 20) {
+                fireworks = fireworks.slice(1, 21);
+            }
    }
     }
     if(!fireworks.length) {
