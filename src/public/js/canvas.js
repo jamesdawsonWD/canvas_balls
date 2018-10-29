@@ -206,7 +206,7 @@ addEventListener('click', event => {
                             origin,
                             dest,
                             utils.randomIntFromRange(10,10), 
-                            utils.randomColorFromRanges([0,360], [40,60], [50,60],1),
+                            utils.randomColorFromRanges([0,360], [60,80], [50,60],1),
                         )
         fireworks.push(
             vector
@@ -255,12 +255,9 @@ Firework.prototype.draw = function(milliseconds) {
         
     } else {
         this.station = true;
-        if (this.radius > 300) {
-            console.log(this.radius);
             ctx.strokeStyle = background;
             ctx.fillStyle = background;
             ctx.stroke();  
-        }
     }
 }
 
@@ -279,17 +276,18 @@ function drawParticles() {
         ctx.arc(0, 0, fireworks[i].radius, 0, 2 * Math.PI);
         ctx.fillStyle = fireworks[i].color;
         ctx.fill();
-        ctx.stroke();
         ctx.restore();
 
     }
 }
+
 function clearCanvas() {
     ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fill();
   }
+
 // Implementation
 let fireworks
 function init() {
@@ -309,9 +307,6 @@ function animate(milliseconds) {
         
         fireworks[i].update(elapsed);
         if(fireworks[i].station ) {
-            // if (i !== fireworks[fireworks.length - 1]) {
-            //     fireworks[i].dest = fireworks[fireworks.length - 1].origin;
-            // }
             fireworks[i].dest = new Vector(canvas.width/2-100, canvas.height);
             if (fireworks[i].origin == fireworks[fireworks.length - 1].origin && fireworks.length > 20) {
                 fireworks.splice(0, 20);
@@ -325,7 +320,6 @@ function animate(milliseconds) {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fill();
     }
-
     requestAnimationFrame(animate)
 }
 
