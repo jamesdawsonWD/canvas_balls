@@ -3,15 +3,15 @@ require('./vector');
 /**
  * requestAnimationFrame
  */
-window.requestAnimationFrame = (function(){
-    return  window.requestAnimationFrame       ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            window.oRequestAnimationFrame      ||
-            window.msRequestAnimationFrame     ||
-            function (callback) {
-                window.setTimeout(callback, 1000 / 60);
-            };
+window.requestAnimationFrame = (function () {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+        };
 })();
 
 /**
@@ -23,24 +23,24 @@ function Vector(x, y) {
 }
 
 function ToVector(magnitude, angle) {
-  
+
     this.magnitudeX = magnitude * Math.cos(angle);
     this.magnitudeY = magnitude * Math.sin(angle);
-  }
+}
 
-Vector.add = function(a, b) {
+Vector.add = function (a, b) {
     return new Vector(a.x + b.x, a.y + b.y);
 };
 
-Vector.sub = function(a, b) {
+Vector.sub = function (a, b) {
     return new Vector(a.x - b.x, a.y - b.y);
 };
 
-Vector.scale = function(v, s) {
+Vector.scale = function (v, s) {
     return v.clone().scale(s);
 };
 
-Vector.random = function() {
+Vector.random = function () {
     return new Vector(
         Math.random() * 2 - 1,
         Math.random() * 2 - 1
@@ -48,7 +48,7 @@ Vector.random = function() {
 };
 
 Vector.prototype = {
-    set: function(x, y) {
+    set: function (x, y) {
         if (typeof x === 'object') {
             y = x.y;
             x = x.x;
@@ -58,33 +58,33 @@ Vector.prototype = {
         return this;
     },
 
-    add: function(v) {
+    add: function (v) {
         this.x += v.x;
         this.y += v.y;
         return this;
     },
 
-    sub: function(v) {
+    sub: function (v) {
         this.x -= v.x;
         this.y -= v.y;
         return this;
     },
 
-    scale: function(s) {
+    scale: function (s) {
         this.x *= s;
         this.y *= s;
         return this;
     },
 
-    length: function() {
+    length: function () {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     },
 
-    lengthSq: function() {
+    lengthSq: function () {
         return this.x * this.x + this.y * this.y;
     },
 
-    normalize: function() {
+    normalize: function () {
         var m = Math.sqrt(this.x * this.x + this.y * this.y);
         if (m) {
             this.x /= m;
@@ -93,39 +93,39 @@ Vector.prototype = {
         return this;
     },
 
-    angle: function() {
+    angle: function () {
         return Math.atan2(this.y, this.x);
     },
 
-    angleTo: function(v) {
+    angleTo: function (v) {
         var dx = v.x - this.x,
             dy = v.y - this.y;
         return Math.atan2(dy, dx);
     },
 
-    distanceTo: function(v) {
+    distanceTo: function (v) {
         var dx = v.x - this.x,
             dy = v.y - this.y;
         return Math.sqrt(dx * dx + dy * dy);
     },
 
-    distanceToSq: function(v) {
+    distanceToSq: function (v) {
         var dx = v.x - this.x,
             dy = v.y - this.y;
         return dx * dx + dy * dy;
     },
 
-    lerp: function(v, t) {
+    lerp: function (v, t) {
         this.x += (v.x - this.x) * t;
         this.y += (v.y - this.y) * t;
         return this;
     },
 
-    clone: function() {
+    clone: function () {
         return new Vector(this.x, this.y);
     },
 
-    toString: function() {
+    toString: function () {
         return '(x:' + this.x + ', y:' + this.y + ')';
     }
 };
@@ -135,17 +135,22 @@ const background = ' #0C949E';
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 
+const score = document.getElementById('score')
+const scorectx = score.getContext('2d');
+
 canvas.width = innerWidth
 canvas.height = innerHeight
 
-let hippoPositionX = canvas.width/2-200;
-let hippoPositionY = canvas.height-300;
+let hippoPositionX = canvas.width / 2 - 200;
+let hippoPositionY = canvas.height - 300;
+let mouthOpen = false;
 let img, imgmain, imgforward;
-
+let points = 0;
 make_base();
+
 function make_base() {
     img = new Image();
-
+    img.src = '../img/whale-closed.png';
     // imgforward = new Image();
     // imgforward.src = '../img/whale-open.png';
 }
@@ -165,54 +170,40 @@ const Configs = {
 
 const colors = ['#85FF9E', '#F6F7F8', '#FCFF4B', '#FF7F66', '#00F2F2']
 
-// Event Listeners
-addEventListener('mousemove', event => {
-    mouse.x = event.clientX
-    mouse.y = event.clientY
-    mouse.vector = new Vector(mouse.x, mouse.y);
-})
 
 document.addEventListener('keypress', (event) => {
-    switch(event.key) {
+    switch (event.key) {
         case 'd':
             if (hippoPositionX < canvas.width + 100) hippoPositionX += 100;
             if (hippoPositionX > canvas.width) hippoPositionX = -400;
             break;
         case 'a':
             if (hippoPositionX > -500) hippoPositionX -= 100;
-            if (hippoPositionX < -300) hippoPositionX = canvas.width+100;
+            if (hippoPositionX < -300) hippoPositionX = canvas.width + 100;
 
             break;
         case 'w':
-            if (hippoPositionY > canvas.height-500) hippoPositionY -= 200;
+            if (hippoPositionY > canvas.height - 500) hippoPositionY -= 200;
             img.src = '../img/whale-open.png';
+            mouthOpen = true;
             break;
     }
 });
 
 document.addEventListener("keyup", (event) => {
-    switch(event.key) {
+    switch (event.key) {
         case 'w':
             img.src = '../img/whale-closed.png';
             hippoPositionY += 200;
+            mouthOpen = false;
             break;
     }
 });
 
 addEventListener('click', event => {
 
-        const dest = mouse.vector;
-        const origin = new Vector(utils.randomIntFromRange(canvas.width/2 - 100,canvas.width/2 + 100), 0 );
-        const vector = new Firework(
-                            origin,
-                            dest,
-                            20, 
-                            utils.randomColorFromArray(colors),
-                        )
-        fireworks.push(
-            vector
-        )
-    
+    createRandomFireworks(1);
+
 })
 
 addEventListener('resize', () => {
@@ -229,6 +220,23 @@ function distanceToAndAngle(a, b) {
     };
 }
 
+function createRandomFireworks(number) {
+
+    for (let i = 0; i < number; i++) {
+        const dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height - 300));
+        const origin = new Vector(utils.randomIntFromRange(canvas.width / 2 - 100, canvas.width / 2 + 100), 0);
+        const vector = new Firework(
+            origin,
+            dest,
+            20,
+            utils.randomColorFromArray(colors),
+        )
+        fireworks.push(
+            vector
+        )
+    }
+
+}
 // Firework
 function Firework(origin, dest, radius, color) {
     this.origin = origin;
@@ -239,47 +247,56 @@ function Firework(origin, dest, radius, color) {
     this.particles = [];
 }
 
-Firework.prototype.draw = function(milliseconds) {
+Firework.prototype.draw = function (milliseconds) {
 
     const data = distanceToAndAngle(this.origin, this.dest);
     const velocity = data.distance / 0.5;
     const toMouseVector = new ToVector(velocity, data.angle);
     const elapsedSeconds = milliseconds / 1000;
-		
+
     drawParticles();
-    
+
     this.origin.x += toMouseVector.magnitudeX * elapsedSeconds;
     this.origin.y += toMouseVector.magnitudeY * elapsedSeconds;
-    
 
-    if (velocity > 7) {
-        
-    } else {
+
+    if (velocity < 7) {
+
         this.station = true;
-            ctx.strokeStyle = background;
-            ctx.fillStyle = background;
-            ctx.stroke();  
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = background;
+        ctx.stroke();
     }
 }
 
-Firework.prototype.update = function(elapsed) {
+Firework.prototype.update = function (elapsed) {
     clearCanvas();
-    this.draw(elapsed)
+    this.draw(elapsed);
+    
 }
 
+function drawScore() {
+    scorectx.save();
+    scorectx.beginPath();
+    scorectx.globalCompositeOperation = "source-over";
+    scorectx.fillStyle = "white";
+    scorectx.font = "45pt Verdana";
+    scorectx.fillText(points,50,100);
+}
 function drawParticles() {
+    ctx.drawImage(img, hippoPositionX, hippoPositionY);
+    drawScore();
     for (let i = 0; i < fireworks.length; i++) {
-        
         ctx.save();
         ctx.beginPath();
-        ctx.drawImage(img, hippoPositionX, hippoPositionY);
         ctx.translate(fireworks[i].origin.x, fireworks[i].origin.y);
+
         ctx.arc(0, 0, fireworks[i].radius, 0, 2 * Math.PI);
         ctx.fillStyle = fireworks[i].color;
         ctx.fill();
         ctx.restore();
-
     }
+
 }
 
 function clearCanvas() {
@@ -287,10 +304,11 @@ function clearCanvas() {
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fill();
-  }
+}
 
 // Implementation
 let fireworks
+
 function init() {
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -303,24 +321,33 @@ function init() {
 function animate(milliseconds) {
     var elapsed = milliseconds - Configs.lastStep;
     Configs.lastStep = milliseconds;
-
+    drawScore();
     for (let i = 0; i < fireworks.length; i++) {
-        
-        fireworks[i].update(elapsed);
-        if(fireworks[i].station ) {
-            fireworks[i].dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height-300));
-            fireworks[i].station = false;
-            if (fireworks.length > 20) {
-                fireworks = fireworks.slice(1, 21);
+        if (mouthOpen && fireworks[i].origin.x >= hippoPositionX && fireworks[i].origin.x <= hippoPositionX + 400 &&
+            fireworks[i].origin.y >= hippoPositionY+50 && fireworks[i].origin.y <= hippoPositionY + 200) {
+            console.log(fireworks);
+            fireworks.splice(i, 1);
+            points += 1;
+            if(fireworks.length < 2) {
+                createRandomFireworks(utils.randomIntFromRange(7,10));
             }
-   }
+        } else {
+            if (fireworks[i].origin.x >= hippoPositionX && fireworks[i].origin.x <= hippoPositionX + 400 &&
+                fireworks[i].origin.y >= hippoPositionY && fireworks[i].origin.y <= hippoPositionY + 600) {
+                fireworks[i].dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height - 300));
+            }
+            if (fireworks[i].station) {
+                fireworks[i].dest = new Vector(utils.randomIntFromRange(0, canvas.width), utils.randomIntFromRange(0, canvas.height - 300));
+                fireworks[i].station = false;
+                if (fireworks.length > 20) {
+                    fireworks = fireworks.slice(1, 21);
+                }
+            }
+            fireworks[i].update(elapsed);
+        }
+
     }
-    if(!fireworks.length) {
-        ctx.fillStyle = background;
-        ctx.fillStyle = background;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fill();
-    }
+
     requestAnimationFrame(animate)
 }
 
